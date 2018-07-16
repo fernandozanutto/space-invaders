@@ -46,12 +46,17 @@ class Jogador(Character):
     def can_move_vertically(self):
         return True
 
+    def __str__(self):
+        return '+'
+
 
 class Nave1(Character):
 
-    def __init__(self):
+    def __init__(self, y, x):
         Character.__init__(self, Entidade.DirecaoHorizontal.esquerda)
 
+        self.x = x
+        self.y = y
         self.corpo = [
             [' ', ' ', '*'],
             ['*', '*', '*'],
@@ -59,12 +64,16 @@ class Nave1(Character):
             ['*', '*', '*'],
             [' ', ' ', '*'],
         ]
+        self.center = (2, 2)
 
     def can_move_horizontally(self):
         return True
 
     def can_move_vertically(self):
         return False
+
+    def __str__(self):
+        return '*'
 
 
 class Tiro(Entidade):
@@ -83,3 +92,6 @@ class Tiro(Entidade):
 
     def can_move_horizontally(self):
         return True
+
+    def __str__(self):
+        return '-'

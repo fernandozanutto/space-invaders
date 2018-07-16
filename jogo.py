@@ -2,6 +2,7 @@ import copy
 import os
 from entidades import *
 from enum import Enum
+from random import randint
 
 
 class Direcao(Enum):
@@ -44,20 +45,8 @@ class Jogo:
     def limpar_tela(self):
         self.tela = copy.deepcopy(self.campo_batalha_limpo)
 
-    def desenhar(self):
-        os.system('clear')
-        print(self.jogador.y)
+    def update_entidade(self, entidade: Character):
 
-        self.limpar_tela()
-        for e in self.entidades:
-            self.desenhar_entidade(e)
-
-        for i in self.tela:
-            for x in i:
-                print(x, end="")
-            print()
-
-    def desenhar_entidade(self, entidade: Character):
         posicao_y = entidade.y
         posicao_x = entidade.x
 
@@ -66,17 +55,48 @@ class Jogo:
 
         for index, linha in enumerate(entidade.corpo):
             for index2, xx in enumerate(linha):
-                self.tela[posicao_y + (index-y)][posicao_x + (index2 - x)] = xx
+                nova_posicao_y = posicao_y + (index - y)
+                nova_posicao_x = posicao_x + (index2 - x)
+
+                if self.tela[nova_posicao_y][nova_posicao_x] != ' ':
+                    pass #TODO fazer camada logica separada da visual
+
+                self.tela[nova_posicao_y][nova_posicao_x] = xx
 
     def update(self):
         for e in self.entidades:
             if e.can_move_horizontally():
                 e.x += 1 * e.direcao_horizontal.value
+
             # TODO mover verticalmente?
+
+        self.limpar_tela()
+        for e in self.entidades:
+            try:
+                self.update_entidade(e)
+            except IndexError as error:
+                if isinstance(e, Tiro):
+                    self.entidades.remove(e)
+                else:
+                    raise error
+
+        # TODO gerar naves inimigas
+        if randint(1, 50) == 10:  # 2%
+            nave = Nave1(randint(1, self.altura_mapa-5), self.largura_mapa)
+            self.entidades.append(nave)
 
     def atirar(self, entidade: Character):
         print('pew pew')
         tiro = Tiro(entidade)
         self.entidades.append(tiro)
+
+    def draw(self):
+        os.system('clear')
+        print(self.jogador.y)
+
+        for i in self.tela:
+            for x in i:
+                print(x, end="")
+            print()
 
 

@@ -13,7 +13,7 @@ def start_game():
     while True:
         cont += 1
         jogo.update()
-        jogo.desenhar()
+        jogo.draw()
         print('FRAME:', cont)
         time.sleep(0.2)
 
