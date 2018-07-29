@@ -1,4 +1,3 @@
-import time
 import threading
 from jogo import Jogo
 from pynput import keyboard
@@ -9,13 +8,7 @@ jogo = Jogo()
 
 
 def start_game():
-    cont = 0
-    while True:
-        cont += 1
-        jogo.update()
-        jogo.draw()
-        print('FRAME:', cont)
-        time.sleep(0.2)
+    jogo.start_game()
 
 
 def on_press(key):
@@ -28,6 +21,10 @@ def on_press(key):
 
     elif key == Key.space:
         jogo.atirar(jogo.jogador)
+
+    elif key == 'p':
+        print("PAUSE")
+        jogo.toggle_pause()
 
 
 def on_release(key):

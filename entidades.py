@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class Entidade:
-
     class DirecaoHorizontal(Enum):
         esquerda = -1
         direita = 1
@@ -11,6 +10,8 @@ class Entidade:
         self.y = None
         self.x = None
         self.direcao_horizontal = direcao
+        self.corpo = []
+        self.center = None
 
     def can_move_horizontally(self):
         raise NotImplementedError("implementa o método na classe filho aí por favor")
@@ -18,19 +19,26 @@ class Entidade:
     def can_move_vertically(self):
         raise NotImplementedError("implementa o método na classe filho aí por favor")
 
+    def get_coordenadas_ocupadas(self):
+        retorno = set()
 
-class Character(Entidade):
-    def __init__(self, direcao: Entidade.DirecaoHorizontal):
-        Entidade.__init__(self, direcao)
-        self.corpo = None
-        self.center = None
+        center_y = self.center[0]
+        center_x = self.center[1]
+
+        for y, linha in enumerate(self.corpo):
+            for x, i in enumerate(linha):
+                if i != ' ':
+                    retorno.add((self.y + (y - center_y), self.x + (x - center_x)))
+
+        return retorno
 
 
-class Jogador(Character):
+class Jogador(Entidade):
     def __init__(self):
-        Character.__init__(self, Entidade.DirecaoHorizontal.direita)
+        Entidade.__init__(self, Entidade.DirecaoHorizontal.direita)
         self.nome = input("Digite seu nome: ")
-        self.x = 3 #jogador sempre fica no 3
+        self.x = 3  # jogador sempre fica no 3
+        self.pontos = 0
 
         self.corpo = [
             ['+', ' '],
@@ -50,10 +58,16 @@ class Jogador(Character):
         return '+'
 
 
-class Nave1(Character):
+class Enemy(Entidade):
+    def __init__(self):
+        Entidade.__init__(self, Entidade.DirecaoHorizontal.esquerda)
+        self.bounty = None
+
+
+class Nave1(Enemy):
 
     def __init__(self, y, x):
-        Character.__init__(self, Entidade.DirecaoHorizontal.esquerda)
+        Enemy.__init__(self)
 
         self.x = x
         self.y = y
@@ -65,6 +79,7 @@ class Nave1(Character):
             [' ', ' ', '*'],
         ]
         self.center = (2, 2)
+        self.bounty = 100
 
     def can_move_horizontally(self):
         return True
@@ -78,7 +93,7 @@ class Nave1(Character):
 
 class Tiro(Entidade):
 
-    def __init__(self, dono: Character):
+    def __init__(self, dono: Entidade):
         Entidade.__init__(self, dono.direcao_horizontal)
         self.dono = dono
 
